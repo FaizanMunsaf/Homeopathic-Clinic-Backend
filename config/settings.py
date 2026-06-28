@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     database_url: str | None = None
     direct_url: str | None = None
+    docs_username: str | None = None
+    docs_password: str | None = None
     debug: bool = False
 
     model_config = SettingsConfigDict(env_file=(".env"), extra="ignore")
