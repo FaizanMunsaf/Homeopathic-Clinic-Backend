@@ -26,19 +26,19 @@ def read_root():
     return {"message": "Homeopathic Backend API is running"}
 
 
-@app.get("/docs", include_in_schema=False)
-def swagger_docs(
-    request: Request,
-    credentials: Annotated[HTTPBasicCredentials, Depends(security)],
-) -> HTMLResponse:
-    authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
-    return get_swagger_ui_html(openapi_url=app.openapi_url, title=app.title + " - Swagger UI")
+# @app.get("/docs", include_in_schema=False)
+# def swagger_docs(
+#     request: Request,
+#     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
+# ) -> HTMLResponse:
+#     authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
+#     return get_swagger_ui_html(openapi_url=app.openapi_url, title=app.title + " - Swagger UI")
 
 
-@app.get("/redoc", include_in_schema=False)
-def redoc_docs(
-    request: Request,
-    credentials: Annotated[HTTPBasicCredentials, Depends(security)],
-) -> HTMLResponse:
-    authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
-    return get_redoc_html(openapi_url=app.openapi_url, title=app.title + " - ReDoc")
+# @app.get("/redoc", include_in_schema=False)
+# def redoc_docs(
+#     request: Request,
+#     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
+# ) -> HTMLResponse:
+#     authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
+#     return get_redoc_html(openapi_url=app.openapi_url, title=app.title + " - ReDoc")
