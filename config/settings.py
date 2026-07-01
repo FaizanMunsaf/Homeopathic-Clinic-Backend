@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-for env_file in (".env"):
+for env_file in (".env",):
     if os.path.exists(env_file):
         load_dotenv(env_file, override=False)
         break
@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     direct_url: str | None = None
     docs_username: str | None = None
     docs_password: str | None = None
+    password_secret_key: str | None = None
     debug: bool = False
 
     model_config = SettingsConfigDict(env_file=(".env"), extra="ignore")

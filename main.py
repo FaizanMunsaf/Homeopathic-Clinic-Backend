@@ -4,9 +4,11 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from config.security import authenticate_docs_credentials, ensure_docs_credentials
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.health import router as health_router
-from config.security import authenticate_docs_credentials, ensure_docs_credentials
+from api.user import router as user_router
 
 DOCS_USERNAME, DOCS_PASSWORD = ensure_docs_credentials()
 
@@ -17,8 +19,17 @@ app = FastAPI(
     redoc_url=None,
 )
 app.include_router(health_router)
+app.include_router(user_router)
 
 security = HTTPBasic()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -32,7 +43,10 @@ def swagger_docs(
     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
 ) -> HTMLResponse:
     authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
-    return get_swagger_ui_html(openapi_url=app.openapi_url, title=app.title + " - Swagger UI")
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url or "/openapi.json",
+        title=app.title + " - Swagger UI",
+    )
 
 
 @app.get("/redoc", include_in_schema=False)
@@ -41,4 +55,9 @@ def redoc_docs(
     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
 ) -> HTMLResponse:
     authenticate_docs_credentials(credentials, DOCS_USERNAME, DOCS_PASSWORD)
-    return get_redoc_html(openapi_url=app.openapi_url, title=app.title + " - ReDoc")
+    return get_redoc_html(
+        openapi_url=app.openapi_url or "/openapi.json",
+        title=app.title + " - ReDoc",
+    )
+
+# uvicorn main:app --reload --host

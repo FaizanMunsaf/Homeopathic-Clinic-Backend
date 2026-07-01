@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from config.database import Base
 from config.settings import settings
+from models.user import User  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.sqlalchemy_database_url)

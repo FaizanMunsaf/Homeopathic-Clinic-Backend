@@ -1,10 +1,14 @@
 import os
 import secrets
+import hmac
 
 from fastapi import HTTPException, status
 from fastapi.security import HTTPBasicCredentials
+from passlib.context import CryptContext
 
 from config.settings import settings
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def ensure_docs_credentials() -> tuple[str, str]:
@@ -32,3 +36,20 @@ def authenticate_docs_credentials(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Basic"},
         )
+
+
+def _peppered_password(password: str) -> str:
+    secret = settings.password_secret_key
+    if not secret:
+        raise RuntimeError(
+            "PASSWORD_SECRET_KEY must be set in .env or the environment to hash passwords"
+        )
+    return hmac.new(secret.encode(), password.encode(), "sha256").hexdigest()
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(_peppered_password(password))
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(_peppered_password(plain_password), hashed_password)
